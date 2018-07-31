@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Sms</string>
+
+    <string name="sms_permission_title">SMS Permission Must</string>
+    <string name="sms_permission_rationale">As we need to analyse your SMS inbox to show report on Credit Card transactions! Kindly allow SMS permission to help you!</string>
+    <string name="sms_permission_denied">SMS permission denied</string>
+    <string name="provide_sms_permission">Allow app to read SMS</string>
+</resources>
