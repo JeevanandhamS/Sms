@@ -223,7 +223,7 @@ public class SmsListAdapter extends SectioningAdapter {
     static void setFadeOutAnimation(View v) {
         v.setVisibility(View.VISIBLE);
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(v, "alpha", 0.8f, 0f);
-        fadeOut.setDuration(1000);
+        fadeOut.setDuration(1500);
 
         AnimatorSet mAnimationSet = new AnimatorSet();
         mAnimationSet.play(fadeOut);

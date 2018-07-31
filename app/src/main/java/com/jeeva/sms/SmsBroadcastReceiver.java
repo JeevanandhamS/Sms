@@ -15,8 +15,6 @@ import com.jeeva.sms.data.dto.Sms;
 import com.jeeva.sms.ui.smslist.SmsListActivity;
 import com.jeeva.sms.utils.NotificationUtils;
 
-import java.util.Random;
-
 public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     private SmsDao mSmsDao;
@@ -72,15 +70,13 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(Context context, Sms smsData) {
-        int notificationId = new Random().nextInt(50) + 1;
-
         Intent targetIntent = SmsListActivity.getNewSmsIntent(context, smsData);
         PendingIntent pIntent = PendingIntent.getActivity(
                 context, (int) System.currentTimeMillis(), targetIntent, 0);
 
         NotificationUtils.presentNotification(
                 context,
-                notificationId,
+                (int) smsData.getSmsId(),
                 smsData.getSenderId(),
                 smsData.getMessageBody(),
                 pIntent,
