@@ -29,6 +29,7 @@ public class MyDbHandler {
         List<Sms> smsList = new ArrayList<>();
 
         String[] projection = {
+                InbuiltSmsDictionary.ID,
                 InbuiltSmsDictionary.ADDRESS,
                 InbuiltSmsDictionary.BODY,
                 InbuiltSmsDictionary.DATE
@@ -48,9 +49,10 @@ public class MyDbHandler {
 
                 do {
                     smsList.add(createSms(
-                            cursor.getString(0),
+                            cursor.getLong(0),
                             cursor.getString(1),
-                            cursor.getLong(2)
+                            cursor.getString(2),
+                            cursor.getLong(3)
                     ));
                 } while (cursor.moveToNext());
             }
@@ -65,17 +67,13 @@ public class MyDbHandler {
         return smsList;
     }
 
-    public Sms createSms(String senderId, String messageBody, long receivedDate) {
+    public Sms createSms(long smsId, String senderId, String messageBody, long receivedDate) {
         return new Sms(
-                0,
+                smsId,
                 senderId,
                 messageBody,
                 receivedDate
         );
-    }
-
-    public void createSms(Sms sms) {
-        createSms(sms.getSenderId(), sms.getMessageBody(), sms.getReceivedDate());
     }
 
     public SmsDao getSmsDao() {

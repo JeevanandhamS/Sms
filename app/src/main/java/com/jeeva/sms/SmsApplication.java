@@ -2,7 +2,9 @@ package com.jeeva.sms;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.Telephony;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.jeeva.sms.di.DaggerSmsComponent;
@@ -21,6 +23,8 @@ public class SmsApplication extends Application implements HasActivityInjector {
 
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+
+    private SmsBroadcastReceiver mSmsBroadcastReceiver;
 
     @Override
     public void onCreate() {
@@ -65,10 +69,19 @@ public class SmsApplication extends Application implements HasActivityInjector {
 
             }
         });
+
+        mSmsBroadcastReceiver = new SmsBroadcastReceiver(this);
+        registerReceiver(mSmsBroadcastReceiver, new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION));
     }
 
     @Override
     public AndroidInjector<Activity> activityInjector() {
         return dispatchingAndroidInjector;
+    }
+
+    @Override
+    public void onTerminate() {
+        unregisterReceiver(mSmsBroadcastReceiver);
+        super.onTerminate();
     }
 }

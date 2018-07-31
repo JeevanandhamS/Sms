@@ -1,9 +1,11 @@
 package com.jeeva.sms.data.dto;
 
+import java.io.Serializable;
+
 /**
  * Created by jeeva on 16/12/17.
  */
-public class Sms {
+public class Sms implements Serializable {
 
     private long smsId;
 
@@ -59,5 +61,13 @@ public class Sms {
 
     public void setReceivedDate(long receivedDate) {
         this.receivedDate = receivedDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sms sms = (Sms) o;
+        return smsId == sms.smsId;
     }
 }

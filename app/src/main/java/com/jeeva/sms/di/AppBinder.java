@@ -10,6 +10,7 @@ import dagger.android.ContributesAndroidInjector;
  */
 @Module
 public abstract class AppBinder {
+
     @ContributesAndroidInjector
-    public abstract SmsListActivity bindNotesListActivity();
+    public abstract SmsListActivity bindSmsListActivity();
 }

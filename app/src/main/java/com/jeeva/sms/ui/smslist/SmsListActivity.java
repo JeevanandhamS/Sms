@@ -3,6 +3,7 @@ package com.jeeva.sms.ui.smslist;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.jeeva.sms.R;
+import com.jeeva.sms.data.dto.Sms;
 import com.jeeva.sms.di.SmsViewModelFactory;
 import com.jeeva.sms.permission.PermissionHandler;
 
@@ -27,6 +29,8 @@ import io.reactivex.schedulers.Schedulers;
  * Created by jeevanandham on 19/07/18
  */
 public class SmsListActivity extends AppCompatActivity implements PermissionHandler.OnPermissionCallback, OnBottomReachedListener {
+
+    private static final String NEW_SMS_DATA = "newSmsData";
 
     private static final int APP_SETTINGS_REQUEST_CODE = 201;
 
@@ -45,10 +49,17 @@ public class SmsListActivity extends AppCompatActivity implements PermissionHand
 
     private boolean mAllSmsFetched = false;
 
+    public static Intent getNewSmsIntent(Context context, Sms smsData) {
+        Intent intent = new Intent(context, SmsListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(NEW_SMS_DATA, smsData);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notes_list);
+        setContentView(R.layout.activity_sms_list);
 
         mPermissionHandler = new PermissionHandler(Manifest.permission.READ_SMS, this);
 
@@ -102,8 +113,17 @@ public class SmsListActivity extends AppCompatActivity implements PermissionHand
         RecyclerView rcvNotesList = findViewById(R.id.notes_list_rcv);
         rcvNotesList.setLayoutManager(new StickyHeaderLayoutManager());
 
-        mNotesListAdapter = new SmsListAdapter(this);
+        mNotesListAdapter = new SmsListAdapter(this, getNewSmsIfAvailable());
         rcvNotesList.setAdapter(mNotesListAdapter);
+    }
+
+    private Sms getNewSmsIfAvailable() {
+        Bundle bundle = getIntent().getExtras();
+        if(null != bundle && bundle.containsKey(NEW_SMS_DATA)) {
+            return (Sms) bundle.getSerializable(NEW_SMS_DATA);
+        }
+
+        return null;
     }
 
     private void showToastMessage(int messageResId) {

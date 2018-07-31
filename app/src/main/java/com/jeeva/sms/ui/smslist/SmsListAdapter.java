@@ -1,5 +1,7 @@
 package com.jeeva.sms.ui.smslist;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 
 import com.jeeva.sms.R;
 import com.jeeva.sms.data.dto.Sms;
+import com.jeeva.sms.utils.timeutils.TimeUtils;
 
 import org.zakariya.stickyheaders.SectioningAdapter;
 
@@ -30,15 +33,26 @@ public class SmsListAdapter extends SectioningAdapter {
 
     public class ItemViewHolder extends SectioningAdapter.ItemViewHolder {
 
+        View vRippleView;
+
+        TextView tvSender;
+
         TextView tvSmsBody;
+
+        TextView tvSmsTime;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            tvSmsBody = itemView.findViewById(R.id.personNameTextView);
+
+            vRippleView = itemView.findViewById(R.id.sms_row_v_ripple);
+            tvSender = itemView.findViewById(R.id.sms_row_tv_sender);
+            tvSmsBody = itemView.findViewById(R.id.sms_row_tv_message);
+            tvSmsTime = itemView.findViewById(R.id.sms_row_tv_time);
         }
     }
 
     public class HeaderViewHolder extends SectioningAdapter.HeaderViewHolder {
+
         TextView titleTextView;
 
         public HeaderViewHolder(View itemView) {
@@ -47,21 +61,21 @@ public class SmsListAdapter extends SectioningAdapter {
         }
     }
 
+    Sms mNewSms;
+
     OnBottomReachedListener mBottomReachedListener;
 
     HashMap<Long, Section> mDateSectionPosMap = new HashMap<>();
 
     List<Section> mSections = new ArrayList<>();
 
-    public SmsListAdapter(OnBottomReachedListener bottomReachedListener) {
+    public SmsListAdapter(OnBottomReachedListener bottomReachedListener, Sms newSms) {
         this.mBottomReachedListener = bottomReachedListener;
+        this.mNewSms = newSms;
     }
 
     public void updateSmsList(List<Sms> smsList) {
         if (smsList.size() > 0) {
-            long dateInMs;
-            Section currentSection;
-            String content;
 
             for (Sms sms : smsList) {
                 updateSmsData(sms, true);
@@ -152,14 +166,14 @@ public class SmsListAdapter extends SectioningAdapter {
     @Override
     public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int itemType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_item_addressbook_person, parent, false);
+        View v = inflater.inflate(R.layout.inflater_sms_row, parent, false);
         return new ItemViewHolder(v);
     }
 
     @Override
     public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int headerType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_item_addressbook_header, parent, false);
+        View v = inflater.inflate(R.layout.inflater_sms_header, parent, false);
         return new HeaderViewHolder(v);
     }
 
@@ -184,8 +198,17 @@ public class SmsListAdapter extends SectioningAdapter {
 
         ItemViewHolder ivh = (ItemViewHolder) viewHolder;
 
-        Sms note = section.smsList.get(itemIndex);
-        ivh.tvSmsBody.setText(note.getMessageBody());
+        Sms smsData = section.smsList.get(itemIndex);
+        ivh.tvSender.setText(smsData.getSenderId());
+        ivh.tvSmsBody.setText(smsData.getMessageBody());
+        ivh.tvSmsTime.setText(TimeUtils.calcTimeAgoAndReturnText(smsData.getReceivedDate(), System.currentTimeMillis()));
+
+        if(null != mNewSms && mNewSms.equals(smsData)) {
+            mNewSms = null;
+            setFadeOutAnimation(ivh.vRippleView);
+        } else {
+            ivh.vRippleView.setVisibility(View.INVISIBLE);
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -195,5 +218,15 @@ public class SmsListAdapter extends SectioningAdapter {
 
         HeaderViewHolder hvh = (HeaderViewHolder) viewHolder;
         hvh.titleTextView.setText(s.sectionLabel);
+    }
+
+    static void setFadeOutAnimation(View v) {
+        v.setVisibility(View.VISIBLE);
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(v, "alpha", 0.8f, 0f);
+        fadeOut.setDuration(1000);
+
+        AnimatorSet mAnimationSet = new AnimatorSet();
+        mAnimationSet.play(fadeOut);
+        mAnimationSet.start();
     }
 }

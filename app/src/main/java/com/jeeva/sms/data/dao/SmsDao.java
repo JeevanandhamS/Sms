@@ -12,17 +12,15 @@ import io.reactivex.Observable;
  */
 public class SmsDao {
 
-    private static int PAGINATION_LIMIT = 10;
-
     private MyDbHandler mDbHandler;
 
     public SmsDao(MyDbHandler dbHandler) {
         this.mDbHandler = dbHandler;
     }
 
-    public Observable<List<Sms>> getSmsList(long lastFetchDate) {
+    public Observable<List<Sms>> getSmsList(long lastFetchDate, int paginationLimit) {
         return Observable
                 .just(lastFetchDate)
-                .flatMap(dateInMs -> Observable.just(mDbHandler.fetchSmsFromAppInbox(dateInMs, PAGINATION_LIMIT)));
+                .flatMap(dateInMs -> Observable.just(mDbHandler.fetchSmsFromAppInbox(dateInMs, paginationLimit)));
     }
 }

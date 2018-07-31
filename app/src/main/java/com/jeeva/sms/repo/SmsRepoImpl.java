@@ -14,15 +14,17 @@ import io.reactivex.Observable;
  */
 public class SmsRepoImpl implements SmsRepo {
 
-    @Inject
-    SmsDao mNoteDao;
+    private static int PAGINATION_LIMIT = 10;
 
-    public SmsRepoImpl(SmsDao noteDao) {
-        this.mNoteDao = noteDao;
+    @Inject
+    SmsDao mSmsDao;
+
+    public SmsRepoImpl(SmsDao smsDao) {
+        this.mSmsDao = smsDao;
     }
 
     @Override
     public Observable<List<Sms>> getSmsList(long lastFetchDate) {
-        return mNoteDao.getSmsList(lastFetchDate);
+        return mSmsDao.getSmsList(lastFetchDate, PAGINATION_LIMIT);
     }
 }

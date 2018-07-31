@@ -13,6 +13,7 @@ public interface DbDictionary {
 
     interface InbuiltSmsDictionary {
         String TABLE_NAME = "inbox";
+        String ID = "_id";
         String ADDRESS = "address";
         String DATE = "date";
         String BODY = "body";
